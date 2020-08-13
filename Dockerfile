@@ -1,8 +1,6 @@
 FROM debian:buster-slim
 LABEL maintainer Kendal Montgomery <kmontgomery@clarivoy.com>
 ENV DEBIAN_FRONTEND noninteractive
-ENV LC_CTYPE en_US.UTF-8
-ENV LANG C.UTF-8
 
 # Following 'How do I add or remove Dropbox from my Linux repository?' - https://www.dropbox.com/en/help/246
 RUN apt-get -y update \
@@ -20,6 +18,8 @@ RUN apt-get -y update \
     # Download / install
     && echo Downloading and unpacking dropbox... \
     && mkdir -p /dbox && cd /dbox  && wget --quiet -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf - \
+    && wget -q -O /usr/bin/dropbox https://www.dropbox.com/download?dl=packages/dropbox.py \
+    && chmod +x /usr/bin/dropbox \
     && chown -R dropbox:dropbox /dbox \
     && mkdir -p /opt/dropbox \
     # Prevent dropbox to overwrite its binary
