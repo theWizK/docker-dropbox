@@ -1,33 +1,27 @@
-FROM debian:jessie
-MAINTAINER Daniel Rodgers-Pryor <djrodgerspryor@gmail.com>
+FROM debian:buster-slim
+LABEL maintainer Kendal Montgomery <kmontgomery@clarivoy.com>
 ENV DEBIAN_FRONTEND noninteractive
+ENV LC_CTYPE en_US.UTF-8
+ENV LANG C.UTF-8
 
 # Following 'How do I add or remove Dropbox from my Linux repository?' - https://www.dropbox.com/en/help/246
-RUN echo 'deb http://linux.dropbox.com/debian jessie main' > /etc/apt/sources.list.d/dropbox.list \
-    && apt-key adv --keyserver pgp.mit.edu --recv-keys 1C61A2656FB57B7E4DE0F4C1FC918B335044912E \
-    && apt-get -qqy update \
+RUN apt-get -y update \
     # Note 'ca-certificates' dependency is required for 'dropbox start -i' to succeed
-    && apt-get -qqy install ca-certificates curl python-gpgme dropbox python3 \
+    && apt-get -qqy install ca-certificates curl wget python3 \
+      libglib2.0-bin libxext6 libglapi-mesa libxdamage1 libxcb-glx0 \
+      libxcb-dri2-0 libxcb-dri3-0 libxcb-present0 libxcb-sync1 \
+      libxxf86vm1 libxshmfence1 \
     # Perform image clean up.
     && apt-get -qqy autoclean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     # Create service account and set permissions.
     && groupadd dropbox \
-    && useradd -m -d /dbox -c "Dropbox Daemon Account" -s /usr/sbin/nologin -g dropbox dropbox
-
-# Dropbox is weird: it insists on downloading its binaries itself via 'dropbox
-# start -i'. So we switch to 'dropbox' user temporarily and let it do its thing.
-USER dropbox
-RUN mkdir -p /dbox/.dropbox /dbox/.dropbox-dist /dbox/Dropbox /dbox/base \
-    && echo y | dropbox start -i
-
-# Switch back to root, since the run script needs root privs to chmod to the user's preferrred UID
-USER root
-
-# Dropbox has the nasty tendency to update itself without asking. In the processs it fills the
-# file system over time with rather large files written to /dbox and /tmp. The auto-update routine
-# also tries to restart the dockerd process (PID 1) which causes the container to be terminated.
-RUN mkdir -p /opt/dropbox \
+    && useradd -m -d /dbox -c "Dropbox Daemon Account" -s /usr/sbin/nologin -g dropbox dropbox \
+    # Download / install
+    && echo Downloading and unpacking dropbox... \
+    && mkdir -p /dbox && cd /dbox  && wget --quiet -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf - \
+    && chown -R dropbox:dropbox /dbox \
+    && mkdir -p /opt/dropbox \
     # Prevent dropbox to overwrite its binary
     && mv /dbox/.dropbox-dist/dropbox-lnx* /opt/dropbox/ \
     && mv /dbox/.dropbox-dist/dropboxd /opt/dropbox/ \
@@ -38,14 +32,14 @@ RUN mkdir -p /opt/dropbox \
     && chmod u-w /dbox \
     && chmod o-w /tmp \
     && chmod g-w /tmp \
-    # Prepare for command line wrapper
-    && mv /usr/bin/dropbox /usr/bin/dropbox-cli
+    && ln -s /dbox /home/dropbox
 
 # Install init script and dropbox command line wrapper
-COPY run /root/
-COPY dropbox /usr/bin/dropbox
+ADD run /root/
+ADD dropbox /usr/bin/dropbox
 
 WORKDIR /dbox/Dropbox
 EXPOSE 17500
 VOLUME ["/dbox/.dropbox", "/dbox/Dropbox"]
+RUN [ "$(which dropbox)" = "/usr/local/bin/dropbox" ]	
 ENTRYPOINT ["/root/run"]

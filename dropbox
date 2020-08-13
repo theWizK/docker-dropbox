@@ -1,6 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+DB_CLI=$(find /opt/dropbox -name dropbox -type f | head -1)
+[[ -z "${DB_CLI}" ]] && 1>&2 echo "ERROR: dropbox cli not found in /opt/dropbox" && exit 2
+
 if [ $# -gt 0 ]; then
-    su dropbox -s /bin/bash -c "dropbox-cli $(printf "%q " "$@")"
+    su dropbox -s /bin/bash -c "${DB_CLI} $(printf "%q " "$@")"
 else
-    su dropbox -s /bin/bash -c dropbox-cli
+    su dropbox -s /bin/bash -c ${DB_CLI}
 fi
