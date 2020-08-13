@@ -50,7 +50,7 @@ You should see something like this:
 
 ## Manage exclusions and check sync status
 
-    docker exec -t -i dropbox dropbox help
+The "cli wrapper" for the tool seems to no longer be available in recent versions.  So getting status on syncing, etc. just seems to not work.
 
 ## ENV variables
 

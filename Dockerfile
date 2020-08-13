@@ -36,7 +36,6 @@ RUN apt-get -y update \
 
 # Install init script and dropbox command line wrapper
 ADD run /root/
-ADD dropbox /usr/bin/dropbox
 
 WORKDIR /dbox/Dropbox
 EXPOSE 17500
