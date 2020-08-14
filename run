@@ -64,6 +64,12 @@ if [[ -z "$DBOX_SKIP_UPDATE" ]]; then
 	fi
 fi
 
+if [[ -n "${DBOX_BUSINESS_NAME}" ]]
+then
+	echo "Setting up softlink for dropbox business customer directory for ${DBOX_BUSINESS_NAME}..."
+	ln -s /dbox/Dropbox "/dbox/Dropbox (${DBOX_BUSINESS_NAME})"
+fi
+
 echo "Starting dropboxd ($(cat /opt/dropbox/VERSION))..."
 umask 002
 exec su dropbox -s /bin/bash -c /opt/dropbox/dropboxd
