@@ -66,6 +66,10 @@ Run Dropbox with a custom group id (matching the group of the mounted files)
 Default: `False`  
 Set this to `True` to skip updating to the latest Dropbox version on container start
 
+**$DBOX_BUSINESS_NAME**
+Default: none
+Set this to set up a directory softlink for `/dbox/Dropbox (${DBOX_BUSINESS_NAME})` -> `/dbox/Dropbox`. Only needed for business / team customer(s).
+
 
 ## Exposed volumes
 
