@@ -32,7 +32,7 @@ This fixes file permission errrors that might occur when mounting the Dropbox fi
 
     docker run -d --restart=always --name=dropbox \
     --net="host" \
-    drodgers/dropbox
+    clarivoy/dropbox
 
 ## Linking to Dropbox account after first start
 
@@ -50,7 +50,7 @@ You should see something like this:
 
 ## Manage exclusions and check sync status
 
-    docker exec -t -i dropbox dropbox help	
+    docker exec -it --user dropbox dropbox dropbox help	
 
 ## ENV variables
 
