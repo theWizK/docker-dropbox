@@ -1,18 +1,16 @@
 # Dropbox in Docker
 
-[hub]: https://hub.docker.com/r/drodgers/dropbox/
+<!-- [hub]: https://hub.docker.com/r/drodgers/dropbox/ -->
 
 Run Dropbox inside Docker. Fully working with local host folder mount or inter-container linking (via `--volumes-from`).
 
-This repository provides the [drodgers/dropbox](https://registry.hub.docker.com/u/drodgers/dropbox/) image.
-
-Forked from https://github.com/janeczku/docker-dropbox to add [dimaryaz's patch](https://github.com/dimaryaz/dropbox_ext4) to keep dropbox working on non-ext4 filesystems.
+This repository provides the [clarivoy/dropbox]<!--(https://registry.hub.docker.com/u/drodgers/dropbox/)--> image.
 
 ## Usage examples
 
 ### Quickstart
 
-    docker run -d --restart=always --name=dropbox drodgers/dropbox
+    docker run -d --restart=always --name=dropbox clarivoy/dropbox
 
 ### Dropbox data mounted to local folder on the host
 
